@@ -24,8 +24,7 @@ class _WelcomeState extends State<Welcome> {
 
   //datos para mostrar
   String? accessToken;
-  Map<dynamic, dynamic>? _profileData;
-  Map<dynamic, dynamic>? _trackData;
+  
 
   Future<void> login(BuildContext context) async {
     final authUrl = Uri.https(
@@ -54,7 +53,7 @@ class _WelcomeState extends State<Welcome> {
           accessToken = token;
         });
 
-        await _getProfileData(token);
+        
       } else {
         print('Error obteniendo el código de autorización');
       }
@@ -94,27 +93,7 @@ class _WelcomeState extends State<Welcome> {
     }
   }
 
-  Future<void> _getProfileData(String token) async {
-    final profileUrl = Uri.https('api.spotify.com', '/v1/me');
-
-    final response = await http.get(
-      profileUrl,
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-
-    
-    if (response.statusCode == 200) {
-      setState(() {
-        _profileData = jsonDecode(response.body);
-      });
-    } else {
-    print('Respuesta del servidor: ${response.body}');
-      throw Exception('Error obteniendo los datos del perfil');
-      
-    }
-  }
+  
 
  @override
   Widget build(BuildContext context) {

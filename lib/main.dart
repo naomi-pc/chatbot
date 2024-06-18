@@ -1,6 +1,4 @@
-import 'package:chatbot/screens/home.dart';
 import 'package:chatbot/screens/splashscreen.dart';
-import 'package:chatbot/screens/welcome.dart';
 import 'package:flutter/material.dart';
 
 void main() {
