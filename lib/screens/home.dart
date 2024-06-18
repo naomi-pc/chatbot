@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 class Home extends StatefulWidget {
-  const Home({
-    super.key,
-  });
+  final String? accessToken;
+
+  const Home({Key? key, this.accessToken}) : super(key: key);
 
   @override
   _HomeState createState() => _HomeState();
@@ -11,7 +14,20 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final TextEditingController _controller = TextEditingController();
+
+  Map<dynamic, dynamic>? profileData;
+  
   final List<String> _messages = [];
+  
+  
+  
+  @override
+  void initState(){
+  super.initState();
+    if (widget.accessToken != null) {
+      _getProfileData(widget.accessToken!);
+    }
+  }
 
   void _sendMessage() {
     if (_controller.text.isNotEmpty) {
@@ -22,15 +38,38 @@ class _HomeState extends State<Home> {
     }
   }
 
+  Future<void> _getProfileData(String token) async {
+    final profileUrl = Uri.https('api.spotify.com', '/v1/me');
+
+    final response = await http.get(
+      profileUrl,
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    
+    if (response.statusCode == 200) {
+      setState(() {
+        profileData = jsonDecode(response.body);
+      });
+    } else {
+    // print('Respuesta del servidor: ${profileData}');
+      throw Exception('Error obteniendo los datos del perfil');
+      
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Color(0xFFE7F6FB),
-        title: const Center(
+        title: Center(
           child: Text(
-            'MoodTune',
+            'Welcome, ${profileData?['display_name'] ?? 'Unknown'}' ,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20.0,
@@ -79,7 +118,7 @@ class _HomeState extends State<Home> {
                       controller: _controller,
                       style: const TextStyle(color: Colors.black),
                       decoration: InputDecoration(
-                        hintText: 'Escribe un mensaje',
+                        hintText: 'Start chatting',
                         hintStyle: TextStyle(color: Colors.grey),
                         filled: true,
                         fillColor: const Color(0xFFFFFFFF),
