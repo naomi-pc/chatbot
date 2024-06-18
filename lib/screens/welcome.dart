@@ -1,3 +1,4 @@
+import 'package:chatbot/screens/home.dart';
 import 'package:flutter/material.dart';
 
 class Welcome extends StatefulWidget {
@@ -10,7 +11,7 @@ class Welcome extends StatefulWidget {
 }
 
 class _WelcomeState extends State<Welcome> {
- @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFE7F6FB),
@@ -23,7 +24,6 @@ class _WelcomeState extends State<Welcome> {
               const SizedBox(
                 height: 100,
               ),
-              
               ClipOval(
                 child: SizedBox(
                   width: 250, // Set the width of the circle
@@ -57,9 +57,14 @@ class _WelcomeState extends State<Welcome> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: (){},
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => Home()),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1974AB)
+                    backgroundColor: const Color(0xFF1974AB),
                   ),
                   child: const Text(
                     'Let\'s chat now',
@@ -76,5 +81,4 @@ class _WelcomeState extends State<Welcome> {
       ),
     );
   }
-
 }
