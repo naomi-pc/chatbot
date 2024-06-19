@@ -1,3 +1,5 @@
+import 'package:chatbot/screens/playlist.dart';
+import 'package:chatbot/sendData.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -44,7 +46,16 @@ class _HomeState extends State<Home> {
       });
     }
     _messages["bot"].add("test Botd");
-    print(_messages.toString());
+    print(_messages["bot"].length);
+    if(_messages["bot"].length == 5){
+      // _messages["bot"].add("end messages");
+      // sendData(_messages["user"]);
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => Playlist(messages: List<String>.from(_messages["user"]),),
+        ),
+      );
+    }
   }
 
   Future<void> _getProfileData(String token) async {
