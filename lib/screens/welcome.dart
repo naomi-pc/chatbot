@@ -1,5 +1,9 @@
 import 'package:chatbot/screens/home.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_web_auth/flutter_web_auth.dart';
+import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Welcome extends StatefulWidget {
   const Welcome({
@@ -11,7 +15,87 @@ class Welcome extends StatefulWidget {
 }
 
 class _WelcomeState extends State<Welcome> {
-  @override
+
+  //claves
+  final String clientId = '5c6ea34f75714054ad7a12683f405d95';
+  final String clientSecret = '24a9e10df5d0496fa02aba240a58cb8f';
+  final String redirectUri = 'myapp://auth';
+  final String scopes = 'user-read-private user-read-email';
+
+  //datos para mostrar
+  String? accessToken;
+  
+
+  Future<void> login(BuildContext context) async {
+    final authUrl = Uri.https(
+      'accounts.spotify.com',
+      '/authorize',
+      {
+        'response_type': 'code',
+        'client_id': clientId,
+        'redirect_uri': redirectUri,
+        'scope': scopes,
+      },
+    );
+    // print(authUrl.toString());
+    try {
+      
+      final result = await FlutterWebAuth.authenticate(
+        url: authUrl.toString(),
+        callbackUrlScheme: 'myapp',
+      );
+
+      final code = Uri.parse(result).queryParameters['code'];
+      print(code.toString());
+      if (code != null) {
+        final token = await _getAccessToken(code);
+        setState(() {
+          accessToken = token;
+        });
+
+        
+      } else {
+        print('Error obteniendo el código de autorización');
+      }
+    } catch (e) {
+      
+      if (e is PlatformException && e.code == 'CANCELED') {
+        
+        print('Usuario canceló el inicio de sesión');
+      } else {
+        
+        print('Error durante la autenticación: $e');
+      }
+    }
+  }
+
+  Future<String> _getAccessToken(String code) async {
+    final tokenUrl = Uri.https('accounts.spotify.com', '/api/token');
+
+    final response = await http.post(
+      tokenUrl,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Basic ${base64Encode(utf8.encode('$clientId:$clientSecret'))}',
+      },
+      body: {
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': redirectUri,
+      },
+    );
+    
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = jsonDecode(response.body);
+      return body['access_token'];
+    } else {
+      throw Exception('Error obteniendo el token de acceso');
+    }
+  }
+
+  
+
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFE7F6FB),
@@ -57,17 +141,18 @@ class _WelcomeState extends State<Welcome> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => Home()),
-                    );
-                  },
+                  onPressed: () =>{ 
+                    login(context),
+                  Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => Home(accessToken: accessToken,),
+                  ),
+                )},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF1974AB),
                   ),
                   child: const Text(
-                    'Let\'s chat now',
+                    'Log in with Spotify Account',
                     style: TextStyle(
                       fontSize: 17.0,
                       color: Colors.white,

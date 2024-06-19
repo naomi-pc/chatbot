@@ -1,9 +1,14 @@
+import 'package:chatbot/screens/playlist.dart';
+import 'package:chatbot/sendData.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 class Home extends StatefulWidget {
-  const Home({
-    super.key,
-  });
+  final String? accessToken;
+
+  const Home({Key? key, this.accessToken}) : super(key: key);
 
   @override
   _HomeState createState() => _HomeState();
@@ -11,27 +16,93 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final TextEditingController _controller = TextEditingController();
-  final List<String> _messages = [];
+
+  Map<dynamic, dynamic>? profileData;
+  
+  final Map<dynamic, dynamic> _messages ={
+    "user": [],
+    "bot": [],
+  };
+  
+  
+  
+  @override
+  void initState(){
+    super.initState();
+      if (widget.accessToken != null) {
+        _getProfileData(widget.accessToken!);
+      }
+  }
 
   void _sendMessage() {
     if (_controller.text.isNotEmpty) {
       setState(() {
-        _messages.add(_controller.text);
+        if (_messages["user"] == null) {
+          _messages["user"] = [];
+        }
+        _messages["user"].add(_controller.text);
+        
         _controller.clear();
       });
     }
+    _messages["bot"].add("test Botd");
+    print(_messages["bot"].length);
+    if(_messages["bot"].length == 5){
+      // _messages["bot"].add("end messages");
+      // sendData(_messages["user"]);
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => Playlist(messages: List<String>.from(_messages["user"]),),
+        ),
+      );
+    }
   }
+
+  Future<void> _getProfileData(String token) async {
+    final profileUrl = Uri.https('api.spotify.com', '/v1/me');
+
+    final response = await http.get(
+      profileUrl,
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    
+    if (response.statusCode == 200) {
+      setState(() {
+        profileData = jsonDecode(response.body);
+      });
+    } else {
+    // print('Respuesta del servidor: ${profileData}');
+      throw Exception('Error obteniendo los datos del perfil');
+      
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> messageWidgets = [];
+
+    int maxLength = _messages.values.fold(0, (max, list) => list.length > max ? list.length : max);
+
+    for (int i = 0; i < maxLength; i++) {
+      if (i < _messages["user"]!.length) {
+        messageWidgets.add(messageBox(_messages["user"]![i]));
+      }
+      if (i < _messages["bot"]!.length) {
+        messageWidgets.add(messageBoxBot(_messages["bot"]![i]));
+      }
+    }
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Color(0xFFE7F6FB),
-        title: const Center(
+        backgroundColor: const Color(0xFFE7F6FB),
+        title: Center(
           child: Text(
-            'MoodTune',
-            style: TextStyle(
+            'Welcome, ${profileData?['display_name'] ?? 'Unknown'}' ,
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20.0,
               color: Colors.black87,
@@ -48,30 +119,18 @@ class _HomeState extends State<Home> {
                 reverse: true,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
-                  children: _messages
-                      .map((message) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                              child: Container(
-                                padding: const EdgeInsets.all(12.0),
-                                decoration: BoxDecoration(
-                                  color: Color.fromARGB(255, 123, 180, 215),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                child: Text(
-                                  message,
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              ),
-                            ),
-                          ))
-                      .toList(),
+                  children: messageWidgets,
+                  // children: _messages.entries.map((entry) {
+                  //   return Column(
+                  //     children: entry.key == "user" ? (entry.value as List<dynamic>).map((message) => messageBox(message.toString())).toList() 
+                  //     :  (entry.value as List<dynamic>).map((message) => messageBoxBot(message.toString())).toList(),
+                  //   );
+                  // }).toList(),
                 ),
               ),
             ),
             Padding(
-              padding:EdgeInsets.fromLTRB(2.0, 15.0, 2.0, 15.0),
+              padding:const EdgeInsets.fromLTRB(2.0, 15.0, 2.0, 15.0),
               child: Row(
                 children: [
                   Expanded(
@@ -79,8 +138,8 @@ class _HomeState extends State<Home> {
                       controller: _controller,
                       style: const TextStyle(color: Colors.black),
                       decoration: InputDecoration(
-                        hintText: 'Escribe un mensaje',
-                        hintStyle: TextStyle(color: Colors.grey),
+                        hintText: 'Start chatting',
+                        hintStyle: const TextStyle(color: Colors.grey),
                         filled: true,
                         fillColor: const Color(0xFFFFFFFF),
                         border: OutlineInputBorder(
@@ -106,4 +165,44 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+
+  Padding messageBox(String message) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    child: Align(
+      alignment: Alignment.centerRight,
+      child: Container(
+        padding: const EdgeInsets.all(12.0),
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 123, 180, 215),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Text(
+          message, // Use the passed message parameter here
+          style: const TextStyle(color: Colors.white),
+        ),
+      ),
+    ),
+  );
+}
+Padding messageBoxBot(String message) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    child: Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        padding: const EdgeInsets.all(12.0),
+        decoration: BoxDecoration(
+          color: Color.fromARGB(255, 79, 182, 47),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Text(
+          message, // Use the passed message parameter here
+          style: const TextStyle(color: Colors.white),
+        ),
+      ),
+    ),
+  );
+}
+
 }
