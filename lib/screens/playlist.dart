@@ -16,7 +16,7 @@ class _PlaylistState extends State<Playlist> {
   int? prediccionModelo ;
   List<String> idTracks = [];
   Future<void> mandarPrediccion() async{
-    prediccionModelo = sendData(widget.messages, accessTokenChido);
+    prediccionModelo = await sendData(widget.messages, accessTokenChido);
   }
   void initState(){
     super.initState();

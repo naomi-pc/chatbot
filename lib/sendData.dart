@@ -3,7 +3,7 @@ import 'package:chatbot/screens/welcome.dart';
 import 'package:http/http.dart' as http;
 
 
-var prediccion;
+
 late List<Track> _tracks = [];
 String id = AccessToken().id;
 late String playlistId = "";
@@ -11,22 +11,34 @@ late String ss = "";
 List<String> idTracks = [];
 List<String> idTracksCopy = [];
   
-int sendData(List<dynamic> messages, String token) {
-  // List<String> userMessages = List<String>.from(messages);
-  // print(userMessages);
+Future<int> sendData(List<dynamic> messages, String token) async {
   final Map<String, List<dynamic>> jsonMap = {
     "array_strings": messages
   };
-
+  print(messages);
   String array_strings = jsonEncode(jsonMap);
-  // sendToApi(array_strings);
-  prediccion = 1;
-  print(token);
-  _getRecomendations(token, prediccion);
-  idTracksCopy = idTracks;
-  idTracks = [];
-  // return (array_strings);
-  return prediccion;
+  sendToApi(array_strings);
+  int? prediccion = await sendToApi(array_strings);
+  late int predChida ;
+  // List<String> userMessages = List<String>.from(messages);
+  // print(userMessages);
+  
+  // prediccion = 1;
+  if (prediccion != null) {
+    print(prediccion);
+    _getRecomendations(token, prediccion);
+    idTracksCopy = idTracks;
+    idTracks = [];
+    // return (array_strings); // No es necesario devolver esto aquí
+    print('Prediccion: $prediccion');
+    predChida = prediccion;
+    
+  } else {
+    print('No se obtuvo una predicción válida.');
+  }
+
+  return predChida;
+  
 }
 
 List<String> sendIdTracks() {
@@ -34,9 +46,9 @@ List<String> sendIdTracks() {
   return idTracksCopy;
 }
 
-Future<void> sendToApi(String messages) async{
+Future<int?> sendToApi(String messages) async{
   
-  final String url = 'http://127.0.0.1:5000/predict';
+  final String url = 'http://192.168.22.174:5000/predict';
 
     try {
       // Enviar la solicitud POST
@@ -48,12 +60,15 @@ Future<void> sendToApi(String messages) async{
         body: messages,
       );
 
+      print(response.statusCode);
       // Verificar el estado de la respuesta
       if (response.statusCode == 200) {
         // La solicitud fue exitosa
         Map<String, dynamic> responseBody = jsonDecode(response.body);
-        prediccion = responseBody['respuesta'];
-        print('Respuesta del servidor: ${responseBody['respuesta']}');
+        print('cuerpo de la respuesta valida:');
+        print(response.body);
+        print('Respuesta del servidor: ${responseBody['prediccionReal']}');
+        return responseBody['prediccionReal'] as int;
       } else {
         // Hubo un error en la solicitud
         print('Error en la solicitud: ${response.statusCode}');
@@ -63,6 +78,7 @@ Future<void> sendToApi(String messages) async{
       // Manejar cualquier error en la solicitud
       print('Error en la solicitud: $e');
     }
+    
 }
 
 Future<void> _getRecomendations(String token, int valence) async {
@@ -117,7 +133,7 @@ Future<void> _getRecomendations(String token, int valence) async {
       final ss = await addTracksToPlaylist(token, idTracks, playlistId); 
     } 
     else {
-      print(recomUrl);
+      //print(recomUrl);
       print('Respuesta del servidor: ${responseRecomendations.body}');
       throw Exception('Error obteniendo los datos de la cancion');
       

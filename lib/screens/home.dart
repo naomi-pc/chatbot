@@ -55,7 +55,7 @@ class _HomeState extends State<Home> {
     }
     _messages["bot"].add(respuestas?[randomValue]);
     print(_messages["bot"].length);
-    if(_messages["bot"].length == 5){
+    if(_messages["bot"].length == 3){
       // _messages["bot"].add("end messages");
       // sendData(_messages["user"]);
       Navigator.of(context).push(
@@ -64,10 +64,10 @@ class _HomeState extends State<Home> {
         ),
       );
       
-      _messages ={
-        "user": [],
-        "bot": [],
-      };
+      // _messages ={
+      //   "user": [],
+      //   "bot": [],
+      // };
     }
   }
 
