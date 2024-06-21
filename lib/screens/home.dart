@@ -1,37 +1,41 @@
+import 'package:chatbot/apiModels/apiModels.dart';
 import 'package:chatbot/screens/playlist.dart';
-import 'package:chatbot/sendData.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'dart:math';
 
 class Home extends StatefulWidget {
   final String? accessToken;
+  final Map<dynamic, dynamic>? profileData;
 
-  const Home({Key? key, this.accessToken}) : super(key: key);
+  const Home({Key? key, this.accessToken, this.profileData}) : super(key: key);
 
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
+  var randomValue;
   final TextEditingController _controller = TextEditingController();
-
-  Map<dynamic, dynamic>? profileData;
-  
   final Map<dynamic, dynamic> _messages ={
     "user": [],
     "bot": [],
   };
+  List<dynamic>? respuestas;
   
-  
-  
+  Future<void> loadJsonData() async {
+    String jsonData = await rootBundle.loadString('assets/responses.json');
+    Map<String, dynamic> data = jsonDecode(jsonData);
+    respuestas = data["respuestas"];
+  }
+
   @override
   void initState(){
     super.initState();
-      if (widget.accessToken != null) {
-        _getProfileData(widget.accessToken!);
-      }
+    loadJsonData();
+    print(respuestas);
   }
 
   void _sendMessage() {
@@ -40,12 +44,13 @@ class _HomeState extends State<Home> {
         if (_messages["user"] == null) {
           _messages["user"] = [];
         }
+        randomValue = Random().nextInt(respuestas!.length.toInt()); 
         _messages["user"].add(_controller.text);
         
         _controller.clear();
       });
     }
-    _messages["bot"].add("test Botd");
+    _messages["bot"].add(respuestas?[randomValue]);
     print(_messages["bot"].length);
     if(_messages["bot"].length == 5){
       // _messages["bot"].add("end messages");
@@ -58,28 +63,7 @@ class _HomeState extends State<Home> {
     }
   }
 
-  Future<void> _getProfileData(String token) async {
-    final profileUrl = Uri.https('api.spotify.com', '/v1/me');
-
-    final response = await http.get(
-      profileUrl,
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-
-    
-    if (response.statusCode == 200) {
-      setState(() {
-        profileData = jsonDecode(response.body);
-      });
-    } else {
-    // print('Respuesta del servidor: ${profileData}');
-      throw Exception('Error obteniendo los datos del perfil');
-      
-    }
-  }
-
+  
 
   @override
   Widget build(BuildContext context) {
@@ -98,10 +82,16 @@ class _HomeState extends State<Home> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        actions: [
+          IconButton(onPressed: (){}, 
+          icon: (widget.profileData != null && widget.profileData!['images'] != null && widget.profileData!['images'].isNotEmpty)
+          ? Image.network(widget.profileData!['images'][0]['url'])
+          : Container())
+        ],
         backgroundColor: const Color(0xFFE7F6FB),
         title: Center(
           child: Text(
-            'Welcome, ${profileData?['display_name'] ?? 'Unknown'}' ,
+            'Welcome, ${widget.profileData?['display_name'] ?? 'Unknown'}' ,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20.0,

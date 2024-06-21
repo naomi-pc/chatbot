@@ -13,7 +13,7 @@ class _PlaylistState extends State<Playlist> {
 
   void initState(){
     super.initState();
-    ;
+    
   }
   @override
   Widget build(BuildContext context) {

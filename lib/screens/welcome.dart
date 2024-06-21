@@ -1,3 +1,4 @@
+import 'package:chatbot/apiModels/apiModels.dart';
 import 'package:chatbot/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
@@ -11,6 +12,7 @@ class Welcome extends StatefulWidget {
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _WelcomeState createState() => _WelcomeState();
 }
 
@@ -24,7 +26,7 @@ class _WelcomeState extends State<Welcome> {
 
   //datos para mostrar
   String? accessToken;
-  
+  Map<dynamic, dynamic>? profileData ;
 
   Future<void> login(BuildContext context) async {
     final authUrl = Uri.https(
@@ -51,8 +53,10 @@ class _WelcomeState extends State<Welcome> {
         final token = await _getAccessToken(code);
         setState(() {
           accessToken = token;
+          
         });
-
+         Map<dynamic, dynamic>? profileDataFuture = await getProfileData(accessToken!);
+        profileData = profileDataFuture;
         
       } else {
         print('Error obteniendo el código de autorización');
@@ -144,10 +148,10 @@ class _WelcomeState extends State<Welcome> {
                 child: ElevatedButton(
                   onPressed: () =>{ 
                     login(context),
-                  Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => Home(accessToken: accessToken,),
-                  ),
+                    Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => Home(accessToken: accessToken, profileData: profileData),
+                    ),
                 )},
                   style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF1974AB)
