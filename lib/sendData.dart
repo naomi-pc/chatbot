@@ -11,7 +11,7 @@ late String playlistId = "";
 late String ss = "";
 List<String> idTracks = [];
   
-String sendData(List<dynamic> messages, String token) {
+  int sendData(List<dynamic> messages, String token) {
   // List<String> userMessages = List<String>.from(messages);
   // print(userMessages);
   final Map<String, List<dynamic>> jsonMap = {
@@ -25,7 +25,7 @@ String sendData(List<dynamic> messages, String token) {
   _getRecomendations(token, prediccion);
 
   // return (array_strings);
-  return prediccion.toString();
+  return prediccion;
 }
 
 Future<void> sendToApi(String messages) async{
@@ -160,6 +160,8 @@ Future<String> createPlaylist(String token, String idUser) async {
 
   if (response.statusCode == 201) {
     playListData = jsonDecode(response.body);
+    AccessToken().url = playListData!["external_urls"]["spotify"];
+    print(AccessToken().url);
     return playListData!["id"];
   } else {
     print('Respuesta del servidor: ${response.body}');

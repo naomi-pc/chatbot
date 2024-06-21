@@ -187,14 +187,19 @@ class AccessToken {
 
   String _token = '';
   String _id = '';
+  String _url = '';
 
   String get token => _token;
   String get id => _id;
+  String get url => _url;
 
   set token(String value) {
     _token = value;
   }
   set id(String value) {
     _id = value;
+  }
+  set url(String value) {
+    _url = value;
   }
 }
