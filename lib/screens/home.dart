@@ -1,14 +1,16 @@
 import 'package:chatbot/apiModels/apiModels.dart';
 import 'package:chatbot/screens/playlist.dart';
+import 'package:chatbot/screens/welcome.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+
 import 'dart:convert';
 import 'dart:math';
 
 class Home extends StatefulWidget {
   final String? accessToken;
   final Map<dynamic, dynamic>? profileData;
+  
 
   const Home({Key? key, this.accessToken, this.profileData}) : super(key: key);
 
@@ -17,6 +19,8 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final accessTokenChido = AccessToken().token;
+  
   var randomValue;
   final TextEditingController _controller = TextEditingController();
   final Map<dynamic, dynamic> _messages ={
@@ -35,7 +39,7 @@ class _HomeState extends State<Home> {
   void initState(){
     super.initState();
     loadJsonData();
-    print(respuestas);
+    // print(accessTokenChido);
   }
 
   void _sendMessage() {
@@ -57,7 +61,7 @@ class _HomeState extends State<Home> {
       // sendData(_messages["user"]);
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => Playlist(messages: List<String>.from(_messages["user"]),),
+          builder: (context) => Playlist(messages: List<String>.from(_messages["user"])),
         ),
       );
     }
@@ -67,6 +71,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    
     List<Widget> messageWidgets = [];
 
     int maxLength = _messages.values.fold(0, (max, list) => list.length > max ? list.length : max);

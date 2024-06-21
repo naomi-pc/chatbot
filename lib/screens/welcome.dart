@@ -22,10 +22,11 @@ class _WelcomeState extends State<Welcome> {
   final String clientId = '5c6ea34f75714054ad7a12683f405d95';
   final String clientSecret = '24a9e10df5d0496fa02aba240a58cb8f';
   final String redirectUri = 'myapp://auth';
-  final String scopes = 'user-read-private user-read-email';
+  final String scopes = 'user-read-private user-read-email playlist-modify-public';
 
   //datos para mostrar
   String? accessToken;
+
   Map<dynamic, dynamic>? profileData ;
 
   Future<void> login(BuildContext context) async {
@@ -53,9 +54,8 @@ class _WelcomeState extends State<Welcome> {
         final token = await _getAccessToken(code);
         setState(() {
           accessToken = token;
-          
         });
-         Map<dynamic, dynamic>? profileDataFuture = await getProfileData(accessToken!);
+        Map<dynamic, dynamic>? profileDataFuture = await getProfileData(accessToken!);
         profileData = profileDataFuture;
         
       } else {
@@ -74,6 +74,7 @@ class _WelcomeState extends State<Welcome> {
   }
 
   Future<String> _getAccessToken(String code) async {
+    
     final tokenUrl = Uri.https('accounts.spotify.com', '/api/token');
 
     final response = await http.post(
@@ -91,6 +92,8 @@ class _WelcomeState extends State<Welcome> {
     
     if (response.statusCode == 200) {
       final Map<String, dynamic> body = jsonDecode(response.body);
+      AccessToken().token = body['access_token'];
+      
       return body['access_token'];
     } else {
       throw Exception('Error obteniendo el token de acceso');
@@ -172,4 +175,26 @@ class _WelcomeState extends State<Welcome> {
     );
   }
 
+}
+class AccessToken {
+  static final AccessToken _instance = AccessToken._internal();
+
+  factory AccessToken() {
+    return _instance;
+  }
+
+  AccessToken._internal();
+
+  String _token = '';
+  String _id = '';
+
+  String get token => _token;
+  String get id => _id;
+
+  set token(String value) {
+    _token = value;
+  }
+  set id(String value) {
+    _id = value;
+  }
 }

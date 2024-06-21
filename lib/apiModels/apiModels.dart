@@ -1,4 +1,5 @@
 
+import 'package:chatbot/screens/welcome.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
@@ -18,6 +19,7 @@ Future<Map<dynamic, dynamic>?> getProfileData(String token) async {
     
     if (response.statusCode == 200) {
         profileData = jsonDecode(response.body);
+        AccessToken().id = profileData!["id"];
         return profileData;
     } else {
     // print('Respuesta del servidor: ${profileData}');
