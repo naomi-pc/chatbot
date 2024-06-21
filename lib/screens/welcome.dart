@@ -1,3 +1,4 @@
+import 'package:chatbot/apiModels/apiModels.dart';
 import 'package:chatbot/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
@@ -11,6 +12,7 @@ class Welcome extends StatefulWidget {
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _WelcomeState createState() => _WelcomeState();
 }
 
@@ -20,11 +22,12 @@ class _WelcomeState extends State<Welcome> {
   final String clientId = '5c6ea34f75714054ad7a12683f405d95';
   final String clientSecret = '24a9e10df5d0496fa02aba240a58cb8f';
   final String redirectUri = 'myapp://auth';
-  final String scopes = 'user-read-private user-read-email';
+  final String scopes = 'user-read-private user-read-email playlist-modify-public';
 
   //datos para mostrar
   String? accessToken;
-  
+
+  Map<dynamic, dynamic>? profileData ;
 
   Future<void> login(BuildContext context) async {
     final authUrl = Uri.https(
@@ -52,7 +55,8 @@ class _WelcomeState extends State<Welcome> {
         setState(() {
           accessToken = token;
         });
-
+        
+        profileData = await getProfileData(accessToken!);
         
       } else {
         print('Error obteniendo el código de autorización');
@@ -70,6 +74,7 @@ class _WelcomeState extends State<Welcome> {
   }
 
   Future<String> _getAccessToken(String code) async {
+    
     final tokenUrl = Uri.https('accounts.spotify.com', '/api/token');
 
     final response = await http.post(
@@ -87,6 +92,8 @@ class _WelcomeState extends State<Welcome> {
     
     if (response.statusCode == 200) {
       final Map<String, dynamic> body = jsonDecode(response.body);
+      AccessToken().token = body['access_token'];
+      
       return body['access_token'];
     } else {
       throw Exception('Error obteniendo el token de acceso');
@@ -95,7 +102,7 @@ class _WelcomeState extends State<Welcome> {
 
   
 
- @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFE7F6FB),
@@ -143,10 +150,10 @@ class _WelcomeState extends State<Welcome> {
                 child: ElevatedButton(
                   onPressed: () =>{ 
                     login(context),
-                  Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => Home(accessToken: accessToken,),
-                  ),
+                    Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => Home(accessToken: accessToken, profileData: profileData),
+                    ),
                 )},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF1974AB),
@@ -165,5 +172,32 @@ class _WelcomeState extends State<Welcome> {
         ),
       ),
     );
+  }
+}
+class AccessToken {
+  static final AccessToken _instance = AccessToken._internal();
+
+  factory AccessToken() {
+    return _instance;
+  }
+
+  AccessToken._internal();
+
+  String _token = '';
+  String _id = '';
+  String _url = '';
+
+  String get token => _token;
+  String get id => _id;
+  String get url => _url;
+
+  set token(String value) {
+    _token = value;
+  }
+  set id(String value) {
+    _id = value;
+  }
+  set url(String value) {
+    _url = value;
   }
 }
