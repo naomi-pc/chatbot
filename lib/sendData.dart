@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:chatbot/screens/welcome.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/material.dart';
 
 
 var prediccion;
@@ -10,8 +9,9 @@ String id = AccessToken().id;
 late String playlistId = "";
 late String ss = "";
 List<String> idTracks = [];
+List<String> idTracksCopy = [];
   
-  int sendData(List<dynamic> messages, String token) {
+int sendData(List<dynamic> messages, String token) {
   // List<String> userMessages = List<String>.from(messages);
   // print(userMessages);
   final Map<String, List<dynamic>> jsonMap = {
@@ -23,9 +23,15 @@ List<String> idTracks = [];
   prediccion = 1;
   print(token);
   _getRecomendations(token, prediccion);
-
+  idTracksCopy = idTracks;
+  idTracks = [];
   // return (array_strings);
   return prediccion;
+}
+
+List<String> sendIdTracks() {
+  print(idTracksCopy);
+  return idTracksCopy;
 }
 
 Future<void> sendToApi(String messages) async{

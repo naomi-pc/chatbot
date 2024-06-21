@@ -1,4 +1,3 @@
-import 'package:chatbot/apiModels/apiModels.dart';
 import 'package:chatbot/screens/playlist.dart';
 import 'package:chatbot/screens/welcome.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -23,7 +22,7 @@ class _HomeState extends State<Home> {
   
   var randomValue;
   final TextEditingController _controller = TextEditingController();
-  final Map<dynamic, dynamic> _messages ={
+  Map<dynamic, dynamic> _messages ={
     "user": [],
     "bot": [],
   };
@@ -64,6 +63,11 @@ class _HomeState extends State<Home> {
           builder: (context) => Playlist(messages: List<String>.from(_messages["user"])),
         ),
       );
+      
+      _messages ={
+        "user": [],
+        "bot": [],
+      };
     }
   }
 

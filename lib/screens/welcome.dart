@@ -55,8 +55,8 @@ class _WelcomeState extends State<Welcome> {
         setState(() {
           accessToken = token;
         });
-        Map<dynamic, dynamic>? profileDataFuture = await getProfileData(accessToken!);
-        profileData = profileDataFuture;
+        
+        profileData = await getProfileData(accessToken!);
         
       } else {
         print('Error obteniendo el código de autorización');
@@ -102,7 +102,7 @@ class _WelcomeState extends State<Welcome> {
 
   
 
- @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFE7F6FB),

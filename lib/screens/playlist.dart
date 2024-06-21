@@ -14,12 +14,14 @@ class Playlist extends StatefulWidget {
 class _PlaylistState extends State<Playlist> {
   final accessTokenChido = AccessToken().token;
   int? prediccionModelo ;
+  List<String> idTracks = [];
   Future<void> mandarPrediccion() async{
     prediccionModelo = sendData(widget.messages, accessTokenChido);
   }
   void initState(){
     super.initState();
     mandarPrediccion();
+    idTracks = sendIdTracks() as List<String>;
   }
   @override
   Widget build(BuildContext context) {
@@ -37,7 +39,8 @@ class _PlaylistState extends State<Playlist> {
               
               final Uri url = Uri.parse(AccessToken().url);
               _launchURL(url);
-            }, child: const Text("Esperamos la disfrutes"))
+            }, child: const Text("Esperamos la disfrutes")),
+            
           ],
         ),
       ),
