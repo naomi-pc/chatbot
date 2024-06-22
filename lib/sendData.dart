@@ -194,8 +194,7 @@ Future<String> addTracksToPlaylist(String token, List<String> idTracks, String i
             // result.toString()
             // idTracks
             // result
-            uris
-      ,
+            uris,
         "position": 0
       })
     );
