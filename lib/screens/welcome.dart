@@ -115,7 +115,6 @@ class _WelcomeState extends State<Welcome> {
               const SizedBox(
                 height: 100,
               ),
-              
               ClipOval(
                 child: SizedBox(
                   width: 250, // Set the width of the circle
@@ -157,7 +156,7 @@ class _WelcomeState extends State<Welcome> {
                     ),
                 )},
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1974AB)
+                    backgroundColor: const Color(0xFF1974AB),
                   ),
                   child: const Text(
                     'Log in with Spotify Account',
@@ -174,7 +173,6 @@ class _WelcomeState extends State<Welcome> {
       ),
     );
   }
-
 }
 class AccessToken {
   static final AccessToken _instance = AccessToken._internal();
