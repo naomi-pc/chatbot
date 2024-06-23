@@ -1,3 +1,4 @@
+import 'package:chatbot/screens/loading.dart';
 import 'package:chatbot/screens/splashscreen.dart';
 import 'package:flutter/material.dart';
 
@@ -30,10 +31,11 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
         useMaterial3: true,
       ),
       home: const Splash()
+      // home: const Load()
       
       // home: const Home()
       // home: const Welcome()

@@ -109,6 +109,7 @@ class _WelcomeState extends State<Welcome> {
       body: Padding(
         padding: const EdgeInsets.fromLTRB(40, 15, 40, 0),
         child: Center(
+          
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

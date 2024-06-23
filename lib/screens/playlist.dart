@@ -1,3 +1,4 @@
+import 'package:chatbot/screens/home.dart';
 import 'package:chatbot/screens/welcome.dart';
 import 'package:chatbot/sendData.dart';
 import 'package:flutter/material.dart';
@@ -25,24 +26,89 @@ class _PlaylistState extends State<Playlist> {
   }
   @override
   Widget build(BuildContext context) {
+    String imagePath = prediccionModelo == 1 ? 'assets/happy.png' : 'assets/sad.png';
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Envio de Datos'),
-      ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding:EdgeInsets.fromLTRB(30, 160, 30, 30),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text("nuestro bot detectó que estas ${ prediccionModelo==1? "felíz" : "triste"}"),
-            const Text("así que creamos una playlist con tu mood"),
-            ElevatedButton(onPressed: (){
-              
-              final Uri url = Uri.parse(AccessToken().url);
-              _launchURL(url);
-            }, child: const Text("Esperamos la disfrutes")),
-            
+            Text(
+              "Moody detectó que estas ${prediccionModelo == 1 ? "felíz" : "triste"}",
+              style: TextStyle(
+                fontSize: 17.0,
+                color: Colors.black87,
+              ),
+            ),
+            const Text(
+              "así que creamos una playlist con tu mood",
+              style: TextStyle(
+                fontSize: 17.0,
+                color: Colors.black87,
+              ),
+            ),
+            SizedBox(
+              width: 220, // Set the desired width of the image
+              height: 220, // Set the desired height of the image
+              child: Image.asset(
+                imagePath,
+                fit: BoxFit.cover, // Ensure the image covers the box
+              ),
+            ),
+            SizedBox(height: 20,),
+            ElevatedButton(
+              onPressed: () {
+                final Uri url = Uri.parse(AccessToken().url);
+                _launchURL(url);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFE7F6FB),
+              ),
+              child: const Text(
+                'Esperamos la disfrutes',
+                style: TextStyle(
+                  fontSize: 17.0,
+                  color: Color(0xFF1974AB),
+                ),
+              ),
+            ),
+            SizedBox(height: 15,),
+            Center( // Wrap the Row with Center
+              child: Row(
+                mainAxisSize: MainAxisSize.min, // Add this line
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "No es tu mood?",
+                    style: TextStyle(
+                      fontSize: 15.0,
+                      color: Colors.black,
+                    ),
+                  ), 
+                  SizedBox(width: 5,),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Home()),
+                      );
+                    },
+                    child: Text(
+                      "Intenta otra vez",
+                      style: TextStyle(
+                        fontSize: 15.0,
+                        color: Color(0xFF1974AB),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
           ],
         ),
+
       ),
     );
   }

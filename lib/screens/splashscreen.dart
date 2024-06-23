@@ -40,7 +40,7 @@ class _SplashState extends State<Splash> {
                 height: 150, // Set the desired height of the image
                 child: Image.asset(
                   'assets/logoplain.png',
-                  fit: BoxFit.cover, // Ensure the image covers the box
+                  fit: BoxFit.cover,
                 ),
               ),
               const SizedBox(
@@ -51,7 +51,7 @@ class _SplashState extends State<Splash> {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 35.0,
-                  color: Color(0xFFE7F6FB)
+                  color: Colors.white
                 ),
               ),
             ],
