@@ -1,10 +1,14 @@
+import 'package:chatbot/screens/playlist.dart';
 import 'package:chatbot/screens/welcome.dart';
+import 'package:chatbot/sendData.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class Load extends StatefulWidget {
+  final List<String> messages ;
   const Load({
     super.key,
+    required this.messages 
   });
 
   @override
@@ -12,8 +16,34 @@ class Load extends StatefulWidget {
 }
 
 class _LoadState extends State<Load> {
+
+  final accessTokenChido = AccessToken().token;
+  int? prediccionModelo ;
+  List<String> idTracks = [];
+  Future<void> mandarPrediccion() async{
+    prediccionModelo = await sendData(widget.messages, accessTokenChido);
+    AccessToken().prediccion = prediccionModelo!;
+    print("prediccion final : $prediccionModelo");
+  }
+  void initState (){
+    super.initState();
+    idTracks = sendIdTracks() as List<String>;
+    
+    Future.delayed(Duration(seconds: 4),(){
+      Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) =>
+                // Load(messages: widget.messages),
+                Playlist(messages: widget.messages),
+          ),
+        );
+    });
+  }
  @override
   Widget build(BuildContext context) {
+    mandarPrediccion();
+    
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(

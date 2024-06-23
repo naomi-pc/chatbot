@@ -17,31 +17,34 @@ Future<int> sendData(List<dynamic> messages, String token) async {
   };
   print(messages);
   String array_strings = jsonEncode(jsonMap);
-  sendToApi(array_strings);
-  int? prediccion = await sendToApi(array_strings);
+
+  // descomentar para conexion a api
+  // sendToApi(array_strings);
+  // int? prediccion = await sendToApi(array_strings);
+  int? prediccion =0;
   late int predChida ;
   // List<String> userMessages = List<String>.from(messages);
   // print(userMessages);
   
   // prediccion = 1;
   if (prediccion != null) {
-    print(prediccion);
     _getRecomendations(token, prediccion);
     idTracksCopy = idTracks;
     idTracks = [];
     // return (array_strings); // No es necesario devolver esto aquí
-    print('Prediccion: $prediccion');
+    
     predChida = prediccion;
     
   } else {
     print('No se obtuvo una predicción válida.');
   }
-
+  
   return predChida;
   
 }
 
 List<String> sendIdTracks() {
+  // print("idtracks");
   print(idTracksCopy);
   return idTracksCopy;
 }
@@ -81,12 +84,12 @@ Future<int?> sendToApi(String messages) async{
     
 }
 
-Future<void> _getRecomendations(String token, int valence) async {
+Future<void> _getRecomendations(String token, int prediccion) async {
 
     double min = 0;
     double max = 0;
-    
-    if (valence ==0){
+    print("para la recomendiacion, la prediccion es:$prediccion");
+    if (prediccion ==0){
       min = 0;
       max= 0.5;
     }
@@ -101,8 +104,8 @@ Future<void> _getRecomendations(String token, int valence) async {
       {
         
         'limit': '20',
-        'seed_tracks': '7cRGgrQ9eg8V8A4FsSj020,59Q0mA0Bq3bqfV5ySjfTbn',
-        'seed_genres': 'ska,romance,rock',
+        // 'seed_tracks': '7cRGgrQ9eg8V8A4FsSj020,59Q0mA0Bq3bqfV5ySjfTbn',
+        'seed_genres': 'rock, heavy-metal, mexican rock',
         'min_valence': min.toString(),
         'max_valence': max.toString(),
         'min_energy': min.toString(),

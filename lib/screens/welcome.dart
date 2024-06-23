@@ -151,11 +151,15 @@ class _WelcomeState extends State<Welcome> {
                 child: ElevatedButton(
                   onPressed: () =>{ 
                     login(context),
-                    Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => Home(accessToken: accessToken, profileData: profileData),
-                    ),
-                )},
+                    AccessToken().name= profileData?['display_name'] ?? 'Anon',
+                    if (AccessToken().name != null){
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => Home(accessToken: accessToken, profileData: profileData),
+                        ),
+                        )
+                      }
+                    },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF1974AB),
                   ),
@@ -187,10 +191,15 @@ class AccessToken {
   String _token = '';
   String _id = '';
   String _url = '';
+  String _name = '';
+  int _prediccion = 0;
 
   String get token => _token;
   String get id => _id;
   String get url => _url;
+  String get name => _name;
+  int get prediccion => _prediccion;
+  
 
   set token(String value) {
     _token = value;
@@ -200,5 +209,11 @@ class AccessToken {
   }
   set url(String value) {
     _url = value;
+  }
+  set name(String value) {
+    _name = value;
+  }
+  set prediccion(int value) {
+    _prediccion = value;
   }
 }

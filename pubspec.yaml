@@ -81,6 +81,7 @@ flutter:
     - assets/logo3d.jpg
     - assets/logo.png
     - assets/responses.json
+    - assets/enResponses.json
     - assets/closeup.jpg
     - assets/intro.jpg
     - assets/you.jpg

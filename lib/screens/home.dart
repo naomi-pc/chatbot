@@ -1,4 +1,5 @@
 import 'package:chat_bubbles/bubbles/bubble_special_three.dart';
+import 'package:chatbot/screens/loading.dart';
 import 'package:chatbot/screens/playlist.dart';
 import 'package:chatbot/screens/welcome.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -35,7 +36,7 @@ class _HomeState extends State<Home> {
   bool isTyping = false;
 
   Future<void> loadJsonData() async {
-    String jsonData = await rootBundle.loadString('assets/responses.json');
+    String jsonData = await rootBundle.loadString('assets/enResponses.json');
     Map<String, dynamic> data = jsonDecode(jsonData);
     respuestas = data["respuestas"];
   }
@@ -67,18 +68,35 @@ class _HomeState extends State<Home> {
       isTyping = true;
     });
     Future.delayed(Duration(seconds: 2), () {
-      setState(() {
+
+      if (_messages["bot"].length == 3) {
+        setState(() {
+          _messages["bot"].add("I've analized your messages, i'll try to get your emotions");
+          isTyping = false;
+        });
+        // _messages["bot"].add("I've analized your messages, i'll try to get your emotions");
+        Future.delayed(Duration(seconds: 4), () {
+          Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) =>
+                Load(messages: List<String>.from(_messages["user"])),
+                // Playlist(messages: List<String>.from(_messages["user"])),
+          ),
+        );
+        });
+        // Navigator.of(context).push(
+        //   MaterialPageRoute(
+        //     builder: (context) =>
+        //         Load(messages: List<String>.from(_messages["user"])),
+        //         // Playlist(messages: List<String>.from(_messages["user"])),
+        //   ),
+        // );
+      }
+      else{
+        setState(() {
         _messages["bot"].add(respuestas?[randomValue]);
         isTyping = false;
       });
-
-      if (_messages["bot"].length == 3) {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) =>
-                Playlist(messages: List<String>.from(_messages["user"])),
-          ),
-        );
       }
     });
   }
@@ -178,7 +196,7 @@ class _HomeState extends State<Home> {
                             ),
                           ),
                           Text(
-                            'Hello, ${widget.profileData?['display_name'] ?? 'Anon'}',
+                            'Hello, ${AccessToken().name}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20.0,
