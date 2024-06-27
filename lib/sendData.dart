@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:chatbot/screens/welcome.dart';
 import 'package:http/http.dart' as http;
 import 'package:chat_bubbles/chat_bubbles.dart';
+import 'dart:math';
 
 
 late List<Track> _tracks = [];
@@ -20,8 +21,9 @@ Future<int> sendData(List<dynamic> messages, String token) async {
 
   // descomentar para conexion a api
   // sendToApi(array_strings);
-  // int? prediccion = await sendToApi(array_strings);
-  int? prediccion =0;
+  int? prediccion = await sendToApi(array_strings);
+  print(prediccion);
+  // int? prediccion =0;
   late int predChida ;
   // List<String> userMessages = List<String>.from(messages);
   // print(userMessages);
@@ -51,7 +53,7 @@ List<String> sendIdTracks() {
 
 Future<int?> sendToApi(String messages) async{
   
-  final String url = 'http://192.168.22.174:5000/predict';
+  final String url = 'http://172.20.10.13:5000/predict';
 
     try {
       // Enviar la solicitud POST
@@ -88,14 +90,18 @@ Future<void> _getRecomendations(String token, int prediccion) async {
 
     double min = 0;
     double max = 0;
+    String mood = '';
+
     print("para la recomendiacion, la prediccion es:$prediccion");
     if (prediccion ==0){
       min = 0;
       max= 0.5;
+      mood = 'happy';
     }
     else{
       min = 0.5;
       max = 1;
+      mood = 'sad';
       
     }
     final recomUrl = Uri.https(
@@ -124,7 +130,7 @@ Future<void> _getRecomendations(String token, int prediccion) async {
     
     if (responseRecomendations.statusCode == 200) {
       final parsedTracks = parseTracks(responseRecomendations.body);
-      playlistId = await createPlaylist(token, id);
+      playlistId = await createPlaylist(token, id, mood);
       _tracks = parsedTracks;
       for (Track track in _tracks) {
         // print(' ${track.id}');
@@ -166,9 +172,43 @@ class Track{
   }
 }
 
-Future<String> createPlaylist(String token, String idUser) async {
+Future<String> createPlaylist(String token, String idUser, String mood) async {
   Map<String, dynamic>? playListData;
   final urlss = Uri.https('api.spotify.com', '/v1/users/$idUser/playlists');
+  var happy_playlist = {
+    'Sunshine Vibes': 'A playlist to brighten your day and lift your spirits.',
+    'Feel-Good Favorites': 'Enjoy these feel-good tracks that are sure to make you smile.',
+    'Joyful Jams': 'Upbeat songs to fill you with joy and happiness.',
+    'Happy Hits': 'The best hits to keep you in a happy mood.',
+    'Uplifting Anthems': 'Anthems that will uplift your soul and energize you.'
+  };
+
+  var sad_playlist = {
+    'Tearful Tunes': 'Songs that will help you let out your emotions.',
+    'Heartbreak Hits': 'Music to accompany your heartbreak and sorrow.',
+    'Blue Days': 'Melancholic tracks for when you are feeling down.',
+    'Broken Hearts Club': 'Songs for those who have loved and lost.',
+    'Crying in the Rain': 'Emotional tunes to cry along with.'
+  };
+  
+  String playlist_name = '';
+  String playlist_description = '';
+
+  
+  var random = Random();
+  
+  if (mood == 'happy') {
+    var randomKey = happy_playlist.keys.elementAt(random.nextInt(happy_playlist.length));
+    playlist_name = randomKey;
+    playlist_description = happy_playlist[randomKey]!;
+  } else if (mood == 'sad') {
+    var randomKey = sad_playlist.keys.elementAt(random.nextInt(sad_playlist.length));
+    playlist_name = randomKey;
+    playlist_description = sad_playlist[randomKey]!;
+  } else {
+    playlist_name = 'test';
+    playlist_description = 'New playlist test description';
+  }
 
   final response = await http.post(
     urlss,
@@ -177,8 +217,8 @@ Future<String> createPlaylist(String token, String idUser) async {
       'Content-Type': 'application/json',
     },
     body: jsonEncode({
-      "name": "test",
-      "description": "New playlist test description",
+      "name": playlist_name,
+      "description": playlist_description,
       "public": true,
     }),
   );
