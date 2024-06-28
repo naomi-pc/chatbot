@@ -39,14 +39,14 @@ class _PlaylistState extends State<Playlist> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              "Moody detectó que estas ${prediccionModelo == 1 ? "felíz" : "triste"}",
+              "Moody detected you are ${prediccionModelo == 1 ? "happy" : "sad"}",
               style: TextStyle(
                 fontSize: 17.0,
                 color: Colors.black87,
               ),
             ),
             const Text(
-              "así que creamos una playlist con tu mood",
+              "So we created a playlist for your mood",
               style: TextStyle(
                 fontSize: 17.0,
                 color: Colors.black87,
@@ -70,7 +70,7 @@ class _PlaylistState extends State<Playlist> {
                 backgroundColor: Color(0xFFE7F6FB),
               ),
               child: const Text(
-                'Esperamos la disfrutes',
+                'We hope you enjoy it!',
                 style: TextStyle(
                   fontSize: 17.0,
                   color: Color(0xFF1974AB),
@@ -84,7 +84,7 @@ class _PlaylistState extends State<Playlist> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    "No es tu mood?",
+                    "Not your mood?",
                     style: TextStyle(
                       fontSize: 15.0,
                       color: Colors.black,
@@ -99,7 +99,7 @@ class _PlaylistState extends State<Playlist> {
                       );
                     },
                     child: Text(
-                      "Intenta otra vez",
+                      "Try again",
                       style: TextStyle(
                         fontSize: 15.0,
                         color: Color(0xFF1974AB),

@@ -53,7 +53,7 @@ List<String> sendIdTracks() {
 
 Future<int?> sendToApi(String messages) async{
   
-  final String url = 'http://172.20.10.13:5000/predict';
+  final String url = 'http://192.168.22.222:5000/predict';
 
     try {
       // Enviar la solicitud POST
@@ -96,12 +96,12 @@ Future<void> _getRecomendations(String token, int prediccion) async {
     if (prediccion ==0){
       min = 0;
       max= 0.5;
-      mood = 'happy';
+      mood = 'sad';
     }
     else{
       min = 0.5;
       max = 1;
-      mood = 'sad';
+      mood = 'happy';
       
     }
     final recomUrl = Uri.https(
@@ -257,11 +257,13 @@ Future<String> addTracksToPlaylist(String token, List<String> idTracks, String i
         "position": 0
       })
     );
-  if (response.statusCode == 200) {
+  if (response.statusCode == 201) {
     snap = jsonDecode(response.body);
     return snap["snapshot_id"];
   } else {
     print('Respuesta del servidor: ${response.body}');
+    print(response.statusCode);
     throw Exception('Error aniadiendo elementos a la playlist');
+    
   }
 }
